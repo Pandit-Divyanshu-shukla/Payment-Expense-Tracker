@@ -146,6 +146,92 @@
             </div>
         </div>
 
+        <!-- Category Budget Progress -->
+        <div class="card dashboard-card shadow-lg mb-5">
+            <div class="card-header dashboard-card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-bullseye me-2 text-primary"></i>Category Budgets
+                </h5>
+                <span class="badge text-bg-light border">
+                    <%= months[filters.month - 1] %> <%= filters.year %>
+                </span>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="POST" action="/dashboard/category-budgets">
+                    <input type="hidden" name="month" value="<%= filters.month %>">
+                    <input type="hidden" name="year" value="<%= filters.year %>">
+
+                    <div class="row g-3">
+                        <% categoryBudgetSummaries.forEach(item => { %>
+                            <% const itemStatusClass = item.status === "over" ? "danger" : item.status === "warning" ? "warning" : item.status === "good" ? "success" : "secondary"; %>
+                            <div class="col-lg-6">
+                                <div class="border rounded p-3 h-100">
+                                    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-tag text-primary me-2"></i><%= item.category %>
+                                            </h6>
+                                            <small class="text-muted">
+                                                Spent &#8377;<%= item.spent.toLocaleString("en-IN") %>
+                                                <% if (item.hasBudget) { %>
+                                                    of &#8377;<%= item.budgetAmount.toLocaleString("en-IN") %>
+                                                <% } %>
+                                            </small>
+                                        </div>
+                                        <span class="badge text-bg-<%= itemStatusClass %>">
+                                            <% if (item.status === "unset") { %>
+                                                No Limit
+                                            <% } else if (item.status === "over") { %>
+                                                Over
+                                            <% } else if (item.status === "warning") { %>
+                                                Warning
+                                            <% } else { %>
+                                                On Track
+                                            <% } %>
+                                        </span>
+                                    </div>
+
+                                    <div class="progress mb-2" style="height: 8px;">
+                                        <div class="progress-bar bg-<%= itemStatusClass %>" role="progressbar"
+                                            style="width: <%= item.progressPercent %>%"
+                                            aria-valuenow="<%= item.progressPercent %>" aria-valuemin="0"
+                                            aria-valuemax="100">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center small mb-3">
+                                        <span><%= item.hasBudget ? item.usedPercent : 0 %>% used</span>
+                                        <% if (item.hasBudget) { %>
+                                            <strong class="text-<%= item.status === 'over' ? 'danger' : 'success' %>">
+                                                <%= item.remaining >= 0 ? "Remaining" : "Over" %>:
+                                                &#8377;<%= Math.abs(item.remaining).toLocaleString("en-IN") %>
+                                            </strong>
+                                        <% } else { %>
+                                            <span class="text-muted">Set a monthly limit</span>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">&#8377;</span>
+                                        <input type="number" name="budgets[<%= item.category %>]" class="form-control"
+                                            min="0" step="1" placeholder="Category budget"
+                                            value="<%= item.hasBudget ? item.budgetAmount : '' %>">
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Category Budgets
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <% if (transactions.length!==0) { %>
             <!-- Filter Section -->
             <div class="card dashboard-card mb-4">
@@ -171,19 +257,11 @@
                         <div class="col-md-2">
                             <select name="category" class="form-select dashboard-input">
                                 <option value="">All Categories</option>
-                                <option value="Food" <%=filters?.category==="Food" ? "selected" : "" %>>Food</option>
-                                <option value="Travel" <%=filters?.category==="Travel" ? "selected" : "" %>>Travel
-                                </option>
-                                <option value="Bills" <%=filters?.category==="Bills" ? "selected" : "" %>>Bills
-                                </option>
-                                <option value="Entertainment" <%=filters?.category==="Entertainment" ? "selected" : ""
-                                    %>>Entertainment
-                                </option>
-                                <option value="Education" <%=filters?.category==="Education" ? "selected" : "" %>
-                                    >Education
-                                </option>
-                                <option value="Other" <%=filters?.category==="Other" ? "selected" : "" %>>Other
-                                </option>
+                                <% categoryOptions.forEach(option=> { %>
+                                    <option value="<%= option %>" <%=filters?.category===option ? "selected" : "" %>>
+                                        <%= option %>
+                                    </option>
+                                <% }) %>
                             </select>
                         </div>
 

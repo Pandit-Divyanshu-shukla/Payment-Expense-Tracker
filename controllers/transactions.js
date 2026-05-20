@@ -1,9 +1,10 @@
 const Transaction = require("../models/transactions");
+const categories = require("../utils/categories");
 
 /* ===================== NEW ===================== */
 
 module.exports.renderNewForm = (req, res) => {
-    res.render("transactions/new");
+    res.render("transactions/new", { categoryOptions: categories });
 };
 
 module.exports.createTransaction = async (req, res) => {
@@ -61,7 +62,7 @@ module.exports.editTransaction = async (req, res) => {
         return res.redirect(res.locals.redirectUrl || "/dashboard");
     }
 
-    res.render("transactions/edit", { transaction });
+    res.render("transactions/edit", { transaction, categoryOptions: categories });
 };
 
 /* ===================== UPDATE ===================== */

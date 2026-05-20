@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const categories = require("../utils/categories");
 
 const transactionSchema = new mongoose.Schema({
     user: {
@@ -17,7 +18,7 @@ const transactionSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ["Food", "Travel", "Shopping", "Bills", "Entertainment", "Education", "Other"]
+        enum: categories
     },
     date: {
         type: Date,
