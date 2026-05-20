@@ -1,0 +1,95 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h2 class="h4 mb-0">
+                        <i class="fas fa-pen-to-square me-2"></i>Edit Expense
+                    </h2>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="/transactions/<%= transaction._id %>?_method=PUT">
+
+                        <!-- Amount -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold mb-2">
+                                <i class="fas fa-indian-rupee-sign me-2"></i>Amount
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                                </span>
+                                <input 
+                                    type="number"
+                                    name="amount"
+                                    class="form-control form-control-lg"
+                                    value="<%= transaction.amount %>"
+                                    step="1"
+                                    min="1"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold mb-2">
+                                <i class="fas fa-file-alt me-2"></i>Description
+                            </label>
+                            <input 
+                                type="text"
+                                name="description"
+                                class="form-control"
+                                value="<%= transaction.description %>"
+                                required
+                            >
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold mb-2">
+                                <i class="fas fa-tags me-2"></i>Category
+                            </label>
+                            <select name="category" class="form-select" required>
+                                <option value="Food" <%= transaction.category === "Food" ? "selected" : "" %>>Food</option>
+                                <option value="Travel" <%= transaction.category === "Travel" ? "selected" : "" %>>Travel</option>
+                                <option value="Shopping" <%= transaction.category === "Shopping" ? "selected" : "" %>>Shopping</option>
+                                <option value="Bills" <%= transaction.category === "Bills" ? "selected" : "" %>>Bills</option>
+                                <option value="Entertainment" <%= transaction.category === "Entertainment" ? "selected" : "" %>>Entertainment</option>
+                                <option value="Education" <%= transaction.category === "Education" ? "selected" : "" %>>Education</option>
+                                <option value="Other" <%= transaction.category === "Other" ? "selected" : "" %>>Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold mb-2">
+                                <i class="fas fa-calendar-alt me-2"></i>Date
+                            </label>
+                            <input 
+                                type="date"
+                                name="date"
+                                class="form-control"
+                                value="<%= transaction.date.toISOString().split('T')[0] %>"
+                            >
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="/dashboard" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="fas fa-check me-2"></i>Update Expense
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

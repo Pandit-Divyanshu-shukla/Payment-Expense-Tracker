@@ -1,0 +1,74 @@
+<% layout("layouts/boilerplate") %>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h2 class="h4 mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Expense</h2>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <form method="POST" action="/transactions" >
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold mb-2">
+                                    <i class="fas fa-indian-rupee-sign me-2"></i>Amount
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i
+                                            class="fa-solid fa-indian-rupee-sign me-2"></i></span>
+                                    <input type="number" name="amount" class="form-control form-control-lg"
+                                        placeholder="0" step="1" min="1" required>
+                                </div>
+                                <div class="form-text">Enter the expense amount</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold mb-2">
+                                    <i class="fas fa-file-alt me-2"></i>Description
+                                </label>
+                                <input type="text" name="description" class="form-control"
+                                    placeholder="Enter expense description" required>
+                                <div class="form-text">Brief description of the expense</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold mb-2">
+                                    <i class="fas fa-tags me-2"></i>Category
+                                </label>
+                                <select name="category" class="form-select" required>
+                                    <option value="" disabled selected>Select a category</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="form-text">Choose the most relevant category</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold mb-2">
+                                    <i class="fas fa-calendar-alt me-2"></i>Date
+                                </label>
+                                <input type="date" name="date" class="form-control"
+                                    value="<%= new Date().toISOString().split('T')[0] %>">
+                                <div class="form-text">Leave empty for today's date</div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="/dashboard" class="btn btn-outline-secondary me-md-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-save me-2"></i>Add Expense
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

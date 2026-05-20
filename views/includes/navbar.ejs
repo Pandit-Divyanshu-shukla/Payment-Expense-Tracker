@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-md bg-light border-bottom sticky-top">
+    <div class="container-fluid">
+
+        <!-- Brand -->
+        <a class="navbar-brand fw-bold" href="/dashboard">
+            <i class="fa-solid fa-wallet me-1"></i> ExpenseTracker
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+
+
+
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+            <!-- Left Links -->
+            <div class="navbar-nav me-auto">
+                <% if (currentUser) { %>
+                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                    <a class="nav-link" href="/transactions">Transactions</a>
+                    <a class="nav-link" href="/transactions/new">Add Expense</a>
+                    <% } %>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <button class="btn btn-sm btn-outline-secondary me-2" id="themeToggle" type="button"
+                title="Toggle dark mode">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+
+            <!-- Right Auth Links -->
+            <div class="navbar-nav">
+                <% if (!currentUser) { %>
+                    <a class="nav-link" href="/register"><b>Register</b></a>
+                    <a class="nav-link" href="/login"><b>Login</b></a>
+                    <% } else { %>
+                        <span class="nav-link disabled">
+                            Hi, <%= currentUser.username %>
+                        </span>
+                        <a class="nav-link text-danger" href="/logout">
+                            Logout
+                        </a>
+                        <% } %>
+            </div>
+
+        </div>
+    </div>
+</nav>

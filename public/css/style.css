@@ -1,0 +1,166 @@
+/* =========================
+   BASE (LIGHT MODE DEFAULT)
+   ========================= */
+
+body,
+.container,
+.container-fluid {
+  background-color: #ffffff;
+  color: #212529;
+}
+
+/* Cards */
+.card,
+.card-header,
+.card-footer {
+  background-color: #ffffff;
+  color: #212529;
+  border-color: #dee2e6;
+}
+
+/* Tables */
+table,
+thead,
+tbody,
+th,
+td {
+  background-color: #ffffff;
+  color: #212529;
+  border-color: #dee2e6;
+}
+
+/* Form controls */
+.form-control,
+.form-select,
+.input-group-text {
+  background-color: #ffffff;
+  color: #212529;
+  border-color: #ced4da;
+}
+
+/* Badges */
+.badge {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+/* =========================
+   DARK MODE
+   ========================= */
+
+body.dark-mode,
+body.dark-mode .container,
+body.dark-mode .container-fluid {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Cards */
+body.dark-mode .card,
+body.dark-mode .card-header,
+body.dark-mode .card-footer {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+/* Tables */
+body.dark-mode table,
+body.dark-mode thead,
+body.dark-mode tbody,
+body.dark-mode th,
+body.dark-mode td {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+/* Table hover */
+body.dark-mode .table-hover tbody tr:hover {
+  background-color: #2a2a2a;
+}
+
+/* List group */
+body.dark-mode .list-group-item {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+/* Form controls */
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+body.dark-mode .input-group-text {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #90caf9;
+}
+
+/* Navbar */
+body.dark-mode .navbar {
+  background-color: #1a1a1a;
+}
+
+/* Links */
+body.dark-mode a {
+  color: #90caf9;
+}
+
+body.dark-mode a:hover {
+  color: #bbdefb;
+}
+
+/* Badges */
+body.dark-mode .badge {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+/* Buttons */
+body.dark-mode .btn-outline-primary,
+body.dark-mode .btn-outline-danger,
+body.dark-mode .btn-outline-secondary {
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+body.dark-mode .btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+/* Footer */
+body.dark-mode footer {
+  background-color: #121212;
+  color: #aaa;
+}
+
+/* Chart container */
+body.dark-mode #category-chart {
+  background-color: #1e1e1e;
+}
+
+/* Card text fix */
+body.dark-mode .card h1,
+body.dark-mode .card h2,
+body.dark-mode .card h3,
+body.dark-mode .card h4,
+body.dark-mode .card h5,
+body.dark-mode .card h6,
+body.dark-mode .card p,
+body.dark-mode .card label,
+body.dark-mode .card small {
+  color: #e0e0e0;
+}
+
+/* Placeholder */
+body.dark-mode ::placeholder {
+  color: #9e9e9e;
+}

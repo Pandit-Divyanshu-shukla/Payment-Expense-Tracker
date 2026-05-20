@@ -1,0 +1,436 @@
+<% layout("layouts/boilerplate") %>
+
+    <div class="container-fluid dashboard">
+
+        <!-- Header -->
+        <div class="row mb-5">
+            <div class="col">
+                <h1 class="h2 mb-1">Dashboard</h1>
+                <p class="mb-0">
+                    Welcome back,
+                    <strong class="text-primary">
+                        <%= user.username %>
+                    </strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Monthly Summary Filter -->
+        <form method="GET" action="/dashboard" class="row g-3 mb-4 align-items-end">
+
+            <div class="col-md-3">
+                <label class="form-label">Month</label>
+                <select name="month" class="form-select">
+                    <% const months=[ "January" ,"February","March","April","May","June", "July"
+                        ,"August","September","October","November","December" ]; %>
+
+                        <% months.forEach((m, i)=> { %>
+                            <option value="<%= i + 1 %>" <%=filters?.month===i + 1 ? "selected" : "" %>>
+                                <%= m %>
+                            </option>
+                            <% }) %>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Year</label>
+                <select name="year" class="form-select">
+                    <% const currentYear=new Date().getFullYear(); %>
+
+                        <% for (let y=currentYear; y>= currentYear - 5; y--) { %>
+                            <option value="<%= y %>" <%=filters?.year===y ? "selected" : "" %>>
+                                <%= y %>
+                            </option>
+                            <% } %>
+                </select>
+            </div>
+
+
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100">
+                    <i class="fas fa-check me-1"></i>Apply
+                </button>
+            </div>
+
+            <div class="col-md-2">
+                <a href="/dashboard" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-redo"></i> Reset
+                </a>
+
+            </div>
+
+        </form>
+
+
+        <!-- Summary Cards -->
+        <% const budgetAlertClass = budget.status === "over" ? "danger" : budget.status === "warning" ? "warning" : "success"; %>
+        <div class="row mb-5 g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card dashboard-card shadow-lg summary-card">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="icon-circle me-3">
+                            <i class="fas fa-wallet fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="opacity-75 mb-1">Total Expenses</h6>
+                            <h3 class="mb-0 fw-bold">
+                                ₹<%= totalExpense.toLocaleString("en-IN") %>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-5">
+                <div class="card dashboard-card shadow-lg h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                            <div>
+                                <h6 class="opacity-75 mb-1">Monthly Budget</h6>
+                                <h3 class="mb-0 fw-bold">
+                                    <% if (budget.hasBudget) { %>
+                                        &#8377;<%= budget.amount.toLocaleString("en-IN") %>
+                                    <% } else { %>
+                                        Not Set
+                                    <% } %>
+                                </h3>
+                            </div>
+                            <span class="badge text-bg-<%= budget.hasBudget ? budgetAlertClass : 'secondary' %>">
+                                <% if (!budget.hasBudget) { %>
+                                    No Budget
+                                <% } else if (budget.status === "over") { %>
+                                    Over Budget
+                                <% } else if (budget.status === "warning") { %>
+                                    80% Used
+                                <% } else { %>
+                                    On Track
+                                <% } %>
+                            </span>
+                        </div>
+
+                        <% if (budget.hasBudget) { %>
+                            <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress-bar bg-<%= budgetAlertClass %>" role="progressbar"
+                                    style="width: <%= budget.progressPercent %>%"
+                                    aria-valuenow="<%= budget.progressPercent %>" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between small mb-3">
+                                <span><%= budget.usedPercent %>% used</span>
+                                <strong class="text-<%= budget.status === 'over' ? 'danger' : 'success' %>">
+                                    <%= budget.remaining >= 0 ? "Remaining" : "Over" %>:
+                                    &#8377;<%= Math.abs(budget.remaining).toLocaleString("en-IN") %>
+                                </strong>
+                            </div>
+                        <% } %>
+
+                        <form method="POST" action="/dashboard/budget" class="row g-2 align-items-end">
+                            <input type="hidden" name="month" value="<%= filters.month %>">
+                            <input type="hidden" name="year" value="<%= filters.year %>">
+                            <div class="col">
+                                <label class="form-label small">Budget for <%= months[filters.month - 1] %> <%= filters.year %></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="number" name="amount" class="form-control" min="1" step="1"
+                                        value="<%= budget.hasBudget ? budget.amount : '' %>" placeholder="10000" required>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% if (transactions.length!==0) { %>
+            <!-- Filter Section -->
+            <div class="card dashboard-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-filter me-2 text-primary"></i>Filter Expenses
+                    </h5>
+
+                    <form method="GET" action="/transactions" class="row g-3">
+
+                        <!-- Search -->
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text dashboard-input-addon">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" name="q" class="form-control dashboard-input"
+                                    placeholder="Search description" value="<%= filters?.q || '' %>">
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-md-2">
+                            <select name="category" class="form-select dashboard-input">
+                                <option value="">All Categories</option>
+                                <option value="Food" <%=filters?.category==="Food" ? "selected" : "" %>>Food</option>
+                                <option value="Travel" <%=filters?.category==="Travel" ? "selected" : "" %>>Travel
+                                </option>
+                                <option value="Bills" <%=filters?.category==="Bills" ? "selected" : "" %>>Bills
+                                </option>
+                                <option value="Entertainment" <%=filters?.category==="Entertainment" ? "selected" : ""
+                                    %>>Entertainment
+                                </option>
+                                <option value="Education" <%=filters?.category==="Education" ? "selected" : "" %>
+                                    >Education
+                                </option>
+                                <option value="Other" <%=filters?.category==="Other" ? "selected" : "" %>>Other
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- From date -->
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <span class="input-group-text dashboard-input-addon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <input type="date" name="from" class="form-control dashboard-input"
+                                    max="<%= new Date().toISOString().split('T')[0] %>"
+                                    value="<%= filters?.from || '' %>">
+                            </div>
+                        </div>
+
+                        <!-- To date -->
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <span class="input-group-text dashboard-input-addon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <input type="date" name="to" class="form-control dashboard-input"
+                                    max="<%= new Date().toISOString().split('T')[0] %>"
+                                    value="<%= filters?.to || '' %>">
+                            </div>
+                        </div>
+
+                        <!-- Apply -->
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-check me-1"></i>Show
+                            </button>
+                        </div>
+
+                        <!-- Reset -->
+                        <div class="col-md-1">
+                            <button type="reset" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <% } %>
+
+                <!-- Recent Expenses -->
+                <div class="card dashboard-card shadow-lg">
+                    <div class="card-header dashboard-card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history me-2 text-primary"></i>Recent Expenses
+                        </h5>
+
+                        <% if (totalCount> 5) { %>
+                            <a href="/transactions" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-external-link-alt me-1"></i>View All
+                            </a>
+                            <% } %>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <% if (transactions.length===0) { %>
+
+                            <div class="text-center py-5">
+                                <i class="fas fa-receipt fa-4x opacity-25 mb-3"></i>
+                                <h5 class="mb-2">No expenses recorded yet</h5>
+                                <p class="text-muted mb-4">Start by adding your first expense</p>
+                                <a href="/transactions/new" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Add Expense
+                                </a>
+                            </div>
+
+                            <% } else { %>
+
+                                <div class="table-responsive">
+                                    <table class="table dashboard-table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-4">Date</th>
+                                                <th>Description</th>
+                                                <th>Category</th>
+                                                <th class="text-end">Amount</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <% transactions.forEach(txn=> { %>
+                                                <tr>
+                                                    <td class="ps-4">
+                                                        <i class="fas fa-calendar-day text-primary me-2"></i>
+                                                        <%= txn.date.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})
+                                                            %>
+                                                    </td>
+
+                                                    <td>
+                                                        <a href="/transactions/<%= txn._id %>"
+                                                            class="text-decoration-none dashboard-link">
+                                                            <%= txn.description %>
+                                                        </a>
+                                                    </td>
+
+                                                    <td>
+                                                        <span class="badge dashboard-badge">
+                                                            <%= txn.category %>
+                                                        </span>
+                                                    </td>
+
+                                                    <td class="text-end fw-semibold">
+                                                        ₹<%= txn.amount.toLocaleString("en-IN") %>
+                                                    </td>
+
+                                                    <td class="text-end">
+                                                        <a href="/transactions/<%= txn._id %>"
+                                                            class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye me-1"></i>View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <% } %>
+                    </div>
+                </div>
+
+    </div>
+
+
+    <!-- Quick Action -->
+    <% if (transactions.length!==0) { %>
+        <div class="row mt-5">
+            <div class="col text-end">
+                <a href="/transactions/new" class="btn btn-primary px-4 py-2 shadow-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Expense
+                </a>
+            </div>
+        </div>
+
+
+        <!-- Category Summary & Chart -->
+        <div class="row mt-5">
+
+            <!-- Category Summary -->
+            <div class="col-lg-4 mb-4">
+                <div class="card dashboard-card h-100">
+                    <div class="card-header dashboard-card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-pie me-2 text-primary"></i>Category-wise Spending
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <% if (categoryTotals.length===0) { %>
+                            <p class="text-muted mb-0">No category data available.</p>
+                            <% } else { %>
+                                <div class="list-group">
+
+                                    <% categoryTotals.forEach(cat=> { %>
+                                        <div
+                                            class="list-group-item dashboard-list-item d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <i class="fas fa-tag text-primary me-2"></i>
+                                                <%= cat._id %>
+                                            </span>
+                                            <strong>₹ <%= cat.total %></strong>
+                                        </div>
+                                        <% }) %>
+
+                                </div>
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="col-lg-8">
+                <div class="card dashboard-card h-100">
+                    <div class="card-header dashboard-card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2 text-primary"></i>Spending Distribution
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="category-chart" style="height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+        </div>
+
+
+
+        <script>
+            const isDarkMode = document.body.classList.contains("dark-mode");
+
+            new Chartkick.PieChart(
+                "category-chart",
+    <%- JSON.stringify(categoryChartData || []) %>,
+                {
+                    colors: ["#0d6efd", "#20c997", "#fd7e14", "#6f42c1", "#e83e8c", "#ffc107"],
+                    donut: true,
+                    legend: true,
+                    library: {
+                        backgroundColor: isDarkMode ? "#1e1e1e" : "#ffffff",
+                        legend: {
+                            labels: {
+                                color: isDarkMode ? "#ffffff" : "#212529"
+                            }
+                        }
+                    }
+                }
+            );
+
+        </script>
+
+        <script>
+            const fromInput = document.querySelector('input[name="from"]');
+            const toInput = document.querySelector('input[name="to"]');
+
+            if (fromInput && toInput) {
+                fromInput.addEventListener("change", () => {
+                    if (fromInput.value && !toInput.value) {
+                        toInput.value = new Date().toISOString().split("T")[0];
+                    }
+                });
+            }
+        </script>
+
+        <script>
+            const filterForm = document.querySelector('form[action="/transactions"]');
+
+            if (filterForm) {
+                filterForm.addEventListener("submit", (e) => {
+                    const q = filterForm.querySelector('input[name="q"]').value.trim();
+                    const category = filterForm.querySelector('select[name="category"]').value;
+                    const from = filterForm.querySelector('input[name="from"]').value;
+                    const to = filterForm.querySelector('input[name="to"]').value;
+
+                    if (!q && !category && !from && !to) {
+                        e.preventDefault();
+                        alert("Please fill at least one filter field.");
+                    }
+                });
+            }
+        </script>
