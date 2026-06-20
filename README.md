@@ -162,21 +162,7 @@ App will be available at **http://localhost:5000**
 
 ---
 
-## 🔑 Environment Variables
 
-```env
-MONGO_URI=your_mongodb_connection_string
-SESSION_SECRET=your_session_secret
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-GEMINI_API_KEY=your_google_ai_studio_api_key
-GEMINI_MODEL=gemini-3.5-flash
-```
-
----
 
 ## 📡 API Reference
 
