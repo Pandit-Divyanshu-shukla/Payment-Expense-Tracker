@@ -3,6 +3,32 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-light py-3">
+                        <h2 class="h5 mb-0">
+                            <i class="fas fa-receipt me-2 text-primary"></i>Scan Receipt
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" action="/transactions/receipt" enctype="multipart/form-data">
+                            <div class="input-group">
+                                <input type="file" name="receipt" class="form-control" accept="image/*" required>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-wand-magic-sparkles me-1"></i>Auto Fill
+                                </button>
+                            </div>
+                            <div class="form-text">Upload a clear receipt image. AI will detect amount, date, category and merchant details.</div>
+                        </form>
+
+                        <% if (receipt) { %>
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="fas fa-circle-check me-1"></i>
+                                Receipt analyzed by AI. Review the details below before saving.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white py-3">
                         <h2 class="h4 mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Expense</h2>
@@ -10,6 +36,12 @@
 
                     <div class="card-body p-4">
                         <form method="POST" action="/transactions" >
+                            <% if (receipt) { %>
+                                <input type="hidden" name="receiptUrl" value="<%= receipt.url %>">
+                                <input type="hidden" name="receiptFilename" value="<%= receipt.filename %>">
+                                <input type="hidden" name="receiptMimetype" value="<%= receipt.mimetype %>">
+                            <% } %>
+
                             <div class="mb-4">
                                 <label class="form-label fw-semibold mb-2">
                                     <i class="fas fa-indian-rupee-sign me-2"></i>Amount
@@ -18,7 +50,8 @@
                                     <span class="input-group-text bg-light"><i
                                             class="fa-solid fa-indian-rupee-sign me-2"></i></span>
                                     <input type="number" name="amount" class="form-control form-control-lg"
-                                        placeholder="0" step="1" min="1" required>
+                                        placeholder="0" step="0.01" min="1"
+                                        value="<%= extractedData.amount || '' %>" required>
                                 </div>
                                 <div class="form-text">Enter the expense amount</div>
                             </div>
@@ -28,7 +61,8 @@
                                     <i class="fas fa-file-alt me-2"></i>Description
                                 </label>
                                 <input type="text" name="description" class="form-control"
-                                    placeholder="Enter expense description" required>
+                                    placeholder="Enter expense description"
+                                    value="<%= extractedData.description || '' %>" required>
                                 <div class="form-text">Brief description of the expense</div>
                             </div>
 
@@ -37,9 +71,11 @@
                                     <i class="fas fa-tags me-2"></i>Category
                                 </label>
                                 <select name="category" class="form-select" required>
-                                    <option value="" disabled selected>Select a category</option>
+                                    <option value="" disabled <%= !extractedData.category ? "selected" : "" %>>Select a category</option>
                                     <% categoryOptions.forEach(category=> { %>
-                                        <option value="<%= category %>"><%= category %></option>
+                                        <option value="<%= category %>" <%= extractedData.category === category ? "selected" : "" %>>
+                                            <%= category %>
+                                        </option>
                                     <% }) %>
                                 </select>
                                 <div class="form-text">Choose the most relevant category</div>
@@ -50,9 +86,29 @@
                                     <i class="fas fa-calendar-alt me-2"></i>Date
                                 </label>
                                 <input type="date" name="date" class="form-control"
-                                    value="<%= new Date().toISOString().split('T')[0] %>">
+                                    value="<%= extractedData.date || new Date().toISOString().split('T')[0] %>">
                                 <div class="form-text">Leave empty for today's date</div>
                             </div>
+
+                            <% if (receipt) { %>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-paperclip me-2"></i>Receipt
+                                    </label>
+                                    <div class="border rounded p-3">
+                                        <a href="<%= receipt.url %>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-up-right-from-square me-1"></i>View Uploaded Receipt
+                                        </a>
+
+                                        <% if (ocrText) { %>
+                                            <details class="mt-3">
+                                                <summary class="small text-muted">View AI extraction response</summary>
+                                                <textarea class="form-control mt-2" rows="5" readonly><%= ocrText %></textarea>
+                                            </details>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                                 <a href="/dashboard" class="btn btn-outline-secondary me-md-2">

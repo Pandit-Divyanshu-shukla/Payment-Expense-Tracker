@@ -4,12 +4,17 @@ const {  isLoggedIn, saveRedirect } = require("../middlewares")
 const transactionsController = require("../controllers/transactions");
 const wrapAsync = require("../utils/wrapAsync");
 const { calculateChartTotals, sendChartUpdate } = require("../middlewares");
+const receiptUpload = require("../middleware/receiptUpload");
 
 
 
 router
     .route("/new")
     .get(isLoggedIn,saveRedirect,transactionsController.renderNewForm)
+
+router
+    .route("/receipt")
+    .post(isLoggedIn, receiptUpload.single("receipt"), wrapAsync(transactionsController.scanReceipt))
 
 router
     .route("/")

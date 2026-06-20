@@ -16,3 +16,7 @@ Thumbs.db
 coverage/
 dist/
 build/
+
+# User uploaded receipts
+public/uploads/receipts/*
+!public/uploads/receipts/.gitkeep

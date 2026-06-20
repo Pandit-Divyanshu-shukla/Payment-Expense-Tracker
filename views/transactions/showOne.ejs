@@ -56,6 +56,15 @@
                                 </span>
                             </li>
 
+                            <% if (transaction.receipt && transaction.receipt.url) { %>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Receipt</span>
+                                    <a href="<%= transaction.receipt.url %>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-receipt me-1"></i>View Receipt
+                                    </a>
+                                </li>
+                            <% } %>
+
                         </ul>
 
                         <!-- Actions -->

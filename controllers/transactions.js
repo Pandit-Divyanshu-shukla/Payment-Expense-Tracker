@@ -1,14 +1,60 @@
 const Transaction = require("../models/transactions");
 const categories = require("../utils/categories");
+const { extractReceiptWithGemini } = require("../utils/geminiReceiptExtractor");
+
+function renderTransactionForm(res, data = {}) {
+    res.render("transactions/new", {
+        categoryOptions: categories,
+        extractedData: data.extractedData || {},
+        receipt: data.receipt || null,
+        ocrText: data.ocrText || ""
+    });
+}
 
 /* ===================== NEW ===================== */
 
 module.exports.renderNewForm = (req, res) => {
-    res.render("transactions/new", { categoryOptions: categories });
+    renderTransactionForm(res);
+};
+
+module.exports.scanReceipt = async (req, res) => {
+    if (!req.file) {
+        req.flash("error", "Please upload a receipt image");
+        return res.redirect("/transactions/new");
+    }
+
+    let parsedReceipt;
+
+    try {
+        parsedReceipt = await extractReceiptWithGemini(req.file.path, req.file.mimetype);
+    } catch (err) {
+        req.flash("error", `Receipt AI extraction failed: ${err.message}`);
+        return renderTransactionForm(res, {
+            receipt: {
+                url: `/uploads/receipts/${req.file.filename}`,
+                filename: req.file.filename,
+                originalName: req.file.originalname,
+                mimetype: req.file.mimetype
+            }
+        });
+    }
+
+    req.flash("success", "Receipt analyzed by AI. Please review the detected details before saving.");
+
+    renderTransactionForm(res, {
+        extractedData: parsedReceipt,
+        receipt: {
+            url: `/uploads/receipts/${req.file.filename}`,
+            filename: req.file.filename,
+            originalName: req.file.originalname,
+            mimetype: req.file.mimetype
+        },
+        ocrText: JSON.stringify(parsedReceipt.rawAiResponse, null, 2)
+    });
 };
 
 module.exports.createTransaction = async (req, res) => {
-    const { amount, description, category, date } = req.body;
+    const { amount, description, category, date, receiptUrl, receiptFilename, receiptMimetype } = req.body;
 
     const transaction = new Transaction({
         amount,
@@ -17,6 +63,14 @@ module.exports.createTransaction = async (req, res) => {
         date,
         user: req.user._id
     });
+
+    if (receiptUrl && receiptFilename) {
+        transaction.receipt = {
+            url: receiptUrl,
+            filename: receiptFilename,
+            mimetype: receiptMimetype
+        };
+    }
 
     await transaction.save();
 
@@ -36,12 +90,12 @@ module.exports.deleteTransaction = async (req, res, next) => {
 
     if (!deleted) {
         req.flash("error", "Delete failed or unauthorized");
-        return res.redirect("/dashboard"); // ✅ return
+        return res.redirect("/dashboard"); //  return
     }
 
     req.flash("success", "Transaction deleted successfully");
 
-    // ✅ pass redirect forward
+    //  pass redirect forward
     res.locals.redirectUrl = req.session.redirectUrl || "/dashboard";
 
     next(); // chart update middleware
@@ -89,7 +143,7 @@ module.exports.updateTransaction = async (req, res) => {
 /* ===================== READ ALL ===================== */
 
 module.exports.showAllTransactions = async (req, res) => {
-    const { category, from, to, q } = req.query;
+    let { category, from, to, q } = req.query;
 
 
     if (from && !to) {
