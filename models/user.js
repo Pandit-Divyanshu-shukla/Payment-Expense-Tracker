@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// 👇 IMPORTANT: destructure the plugin function
+//  destructure the plugin function
 const passportLocalMongoose = require("passport-local-mongoose").default;
 
 const userSchema = new mongoose.Schema({

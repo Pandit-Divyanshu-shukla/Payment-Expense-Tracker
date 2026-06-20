@@ -13,7 +13,7 @@ module.exports.renderDashboard = async (req, res) => {
   const activeMonth = month ? parseInt(month, 10) : today.getMonth() + 1;
   const activeYear = year ? parseInt(year, 10) : today.getFullYear();
 
-  // ✅ Apply date filter ONLY if user explicitly selected month & year
+  //  Apply date filter ONLY if user explicitly selected month & year
   const startDate = new Date(activeYear, activeMonth - 1, 1);
   const endDate = new Date(activeYear, activeMonth, 0, 23, 59, 59, 999);
 

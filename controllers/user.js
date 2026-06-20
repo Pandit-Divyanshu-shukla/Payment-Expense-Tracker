@@ -35,7 +35,7 @@ module.exports.registerUser = async (req, res, next) => {
 
             req.flash("success", "Welcome! Registration successful.");
 
-            // ✅ USE + CLEAN redirectUrl
+            //  USE + CLEAN redirectUrl
             const redirectUrl = req.session.redirectUrl || "/dashboard";
             delete req.session.redirectUrl;
 
@@ -61,7 +61,7 @@ module.exports.renderLoginForm = (req, res) => {
 module.exports.loginUser = (req, res) => {
     req.flash("success", "Welcome back!");
 
-    // ✅ USE + CLEAN redirectUrl
+    //  USE + CLEAN redirectUrl
     const redirectUrl = req.session.redirectUrl || "/dashboard";
     delete req.session.redirectUrl;
 

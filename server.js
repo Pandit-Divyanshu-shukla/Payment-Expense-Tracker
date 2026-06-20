@@ -25,7 +25,7 @@ mongoose.connect(process.env.DB_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.log(err));
 
-// Body parser (IMPORTANT for login/register)
+// Body parser (for login/register)
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
